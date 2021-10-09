@@ -108,6 +108,22 @@ class Player {
         queue.dispatcher = dispatcher;
         queue.textChannel.send(`Start playing: **${song.title}**`);
     }
+
+    async top(message, url) {
+        const information = await ytdl.getInfo(url);
+        const song = {
+            title: information.videoDetails.title,
+            url:   information.videoDetails.video_url
+        }
+        const queue = this.queues.get(message.guild.id);
+        if (!queue) {
+        }
+        else {
+            queue.songs.splice(1, 0, song);
+            message.channel.send(`${song.title} has been added to the top of queue!`);
+        }
+        return;
+    }
 }
 
 module.exports = Player;

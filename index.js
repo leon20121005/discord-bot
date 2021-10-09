@@ -37,6 +37,9 @@ client.on('message', message => {
         case ';play':
             player.request(message, args[1]);
             break;
+        case ';top':
+            player.top(message, args[1]);
+            break;
     }
 });
 
