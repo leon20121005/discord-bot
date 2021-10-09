@@ -1,56 +1,42 @@
 const Discord = require('discord.js');
-const https = require('https');
+const Player = require('./player.js');
 
 const client = new Discord.Client();
-
-function getRandomBoolean(probability)
-{
-    return Math.random() >= probability;
-}
-
-function getRandomInteger(max)
-{
-    return Math.floor(Math.random() * Math.floor(max));
-}
+const player = new Player();
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
 });
 
 client.on('message', message => {
+    if (message.author.bot) {
+        return;
+    }
     console.log(message);
-    if (message.author.bot == false && getRandomBoolean(0.1) == false)
-    {
-        const url = `https://www.googleapis.com/customsearch/v1?cx=${process.env.cx}&key=${process.env.key}&q=${message.content}`;
-        https.get(url, (response) => {
-            let body = '';
 
-            response.on('data', (chunk) => {
-                body += chunk;
-            });
+    const args = message.content.split(' ');
+    console.log(args);
 
-            response.on('end', () => {
-                try
-                {
-                    const json = JSON.parse(body);
-                    const snippet = json.items[0].snippet.split(' ');
-                    const length = snippet.length;
-                    let randomReply = snippet[getRandomInteger(length)];
-                    while (randomReply == message.content)
-                    {
-                        randomReply = snippet[getRandomInteger(length)];
-                    }
-                    message.reply(randomReply);
-                }
-                catch (error)
-                {
-                    console.error(error.message);
-                }
-            });
+    if (!message.member.voice.channel) {
+        return;
+    }
 
-        }).on('error', (error) => {
-            console.error(error.message);
-        });
+    switch (args[0]) {
+        case ';pause':
+            player.pause(message);
+            break;
+        case ';resume':
+            player.resume(message);
+            break;
+        case ';skip':
+            player.skip(message);
+            break;
+        case ';list':
+            player.list(message);
+            break;
+        case ';play':
+            player.request(message, args[1]);
+            break;
     }
 });
 
