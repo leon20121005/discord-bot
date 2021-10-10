@@ -53,11 +53,18 @@ class Player {
     }
 
     async request(message, url) {
-        const information = await ytdl.getInfo(url);
-        const song = {
-            title: information.videoDetails.title,
-            url:   information.videoDetails.video_url
-        };
+        var song;
+        try {
+            const information = await ytdl.getInfo(url);
+            console.log(`Information: ${information}`);
+            song = {
+                title: information.videoDetails.title,
+                url:   information.videoDetails.video_url
+            };
+        } catch (error) {
+            console.error(error);
+            return message.channel.send(error.toString());
+        }
         const queue = this.queues.get(message.guild.id);
         if (!queue) {
             const queue = {
@@ -97,6 +104,7 @@ class Player {
             this.play(guild, queue);
         }).on('error', error => {
             console.error(error);
+            queue.textChannel.send(error.toString());
         });
         dispatcher.setVolumeLogarithmic(queue.volume / 5);
         queue.dispatcher = dispatcher;
