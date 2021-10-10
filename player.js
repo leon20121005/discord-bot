@@ -9,8 +9,7 @@ class Player {
         const queue = this.queues.get(message.guild.id);
         if (!queue) {
             message.channel.send('There is no song I could pause!');
-        }
-        else {
+        } else {
             queue.dispatcher.pause();
             message.channel.send(`${queue.songs[0].title} is paused!`);
         }
@@ -21,8 +20,7 @@ class Player {
         const queue = this.queues.get(message.guild.id);
         if (!queue) {
             message.channel.send('There is no song I could resume!');
-        }
-        else {
+        } else {
             queue.dispatcher.resume();
             message.channel.send(`${queue.songs[0].title} is resumed!`);
         }
@@ -33,8 +31,7 @@ class Player {
         const queue = this.queues.get(message.guild.id);
         if (!queue) {
             message.channel.send('There is no song I could skip!');
-        }
-        else {
+        } else {
             queue.dispatcher.end();
             message.channel.send(`${queue.songs[0].title} is skip!`);
         }
@@ -45,8 +42,7 @@ class Player {
         const queue = this.queues.get(message.guild.id);
         if (!queue) {
             message.channel.send('There is no song I could list!');
-        }
-        else {
+        } else {
             var result = '';
             queue.songs.forEach((song, index) => {
                 result += `[${index + 1}] ${song.title}\n`;
@@ -61,7 +57,7 @@ class Player {
         const song = {
             title: information.videoDetails.title,
             url:   information.videoDetails.video_url
-        }
+        };
         const queue = this.queues.get(message.guild.id);
         if (!queue) {
             const queue = {
@@ -72,20 +68,18 @@ class Player {
                 volume: 1,
                 playing: true,
                 dispatcher: null
-            }
+            };
             this.queues.set(message.guild.id, queue);
             queue.songs.push(song);
             try {
                 const connection = await queue.voiceChannel.join();
                 queue.connection = connection;
                 this.play(message.guild, queue);
+            } catch (error) {
+                console.error(error);
+                return message.channel.send(error.toString());
             }
-            catch (error) {
-                console.log(error);
-                return message.channel.send(error);
-            }
-        }
-        else {
+        } else {
             queue.songs.push(song);
             message.channel.send(`${song.title} has been added to the queue!`);
         }
@@ -102,7 +96,7 @@ class Player {
             queue.songs.shift();
             this.play(guild, queue);
         }).on('error', error => {
-            console.error(error)
+            console.error(error);
         });
         dispatcher.setVolumeLogarithmic(queue.volume / 5);
         queue.dispatcher = dispatcher;
@@ -114,7 +108,7 @@ class Player {
         const song = {
             title: information.videoDetails.title,
             url:   information.videoDetails.video_url
-        }
+        };
         const queue = this.queues.get(message.guild.id);
         if (!queue) {
         }
