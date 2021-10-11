@@ -1,6 +1,8 @@
 const stream = require('./ytdl-customization');
 const ytdl = require('ytdl-core');
 
+const Action = require('./action.model.js');
+
 class Player {
     constructor() {
         this.queues = new Map();
@@ -54,9 +56,10 @@ class Player {
     }
 
     async request(message, url) {
+        var information;
         var song;
         try {
-            const information = await ytdl.getInfo(url);
+            information = await ytdl.getInfo(url);
             console.log(`Information: ${information}`);
             song = {
                 title: information.videoDetails.title,
@@ -66,6 +69,18 @@ class Player {
             console.error(error);
             return message.channel.send(error.toString());
         }
+        const action = new Action({
+            user_id: message.author.id,
+            command: 'request',
+            video_id: information.videoDetails.videoId
+        })
+        Action.create(action, (error, result) => {
+            if (error) {
+                console.error(error);
+            } else {
+                console.log(`Created: ${JSON.stringify(result)}`);
+            }
+        });
         const queue = this.queues.get(message.guild.id);
         if (!queue) {
             const queue = {
