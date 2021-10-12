@@ -56,23 +56,22 @@ class Player {
     }
 
     async request(message, url) {
-        var information;
         var song;
-        try {
-            information = await ytdl.getInfo(url);
-            console.log(`Information: ${information}`);
-            song = {
-                title: information.videoDetails.title,
-                url:   information.videoDetails.video_url
-            };
-        } catch (error) {
-            console.error(error);
-            return message.channel.send(error.toString());
+        await this.getSong(url, (error, result) => {
+            if (error) {
+                console.error(error);
+                message.channel.send(error.toString());
+            } else {
+                song = result;
+            }
+        });
+        if (!song) {
+            return;
         }
         const action = new Action({
             user_id: message.author.id,
             command: 'request',
-            video_id: information.videoDetails.videoId
+            video_id: song.id
         })
         Action.create(action, (error, result) => {
             if (error) {
@@ -128,11 +127,18 @@ class Player {
     }
 
     async top(message, url) {
-        const information = await ytdl.getInfo(url);
-        const song = {
-            title: information.videoDetails.title,
-            url:   information.videoDetails.video_url
-        };
+        var song;
+        await this.getSong(url, (error, result) => {
+            if (error) {
+                console.error(error);
+                message.channel.send(error.toString());
+            } else {
+                song = result;
+            }
+        });
+        if (!song) {
+            return;
+        }
         const queue = this.queues.get(message.guild.id);
         if (!queue) {
         }
@@ -141,6 +147,21 @@ class Player {
             message.channel.send(`${song.title} has been added to the top of queue!`);
         }
         return;
+    }
+
+    async getSong(url, callback) {
+        try {
+            const information = await ytdl.getInfo(url);
+            console.log(`Information: ${information}`);
+            const song = {
+                title: information.videoDetails.title,
+                id:    information.videoDetails.videoId,
+                url:   information.videoDetails.video_url
+            };
+            callback(null, song);
+        } catch (error) {
+            callback(error, null);
+        }
     }
 }
 
