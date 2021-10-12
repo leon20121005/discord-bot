@@ -58,10 +58,7 @@ class Player {
     async request(message, url) {
         var song;
         await this.getSong(url, (error, result) => {
-            if (error) {
-                console.error(error);
-                message.channel.send(error.toString());
-            } else {
+            if (!error) {
                 song = result;
             }
         });
@@ -74,9 +71,7 @@ class Player {
             video_id: song.id
         })
         Action.create(action, (error, result) => {
-            if (error) {
-                console.error(error);
-            } else {
+            if (!error) {
                 console.log(`Created: ${JSON.stringify(result)}`);
             }
         });
@@ -129,10 +124,7 @@ class Player {
     async top(message, url) {
         var song;
         await this.getSong(url, (error, result) => {
-            if (error) {
-                console.error(error);
-                message.channel.send(error.toString());
-            } else {
+            if (!error) {
                 song = result;
             }
         });
@@ -152,14 +144,15 @@ class Player {
     async getSong(url, callback) {
         try {
             const information = await ytdl.getInfo(url);
-            console.log(`Information: ${information}`);
             const song = {
                 title: information.videoDetails.title,
                 id:    information.videoDetails.videoId,
                 url:   information.videoDetails.video_url
             };
+            console.log(`Information: ${information}`);
             callback(null, song);
         } catch (error) {
+            console.error(error);
             callback(error, null);
         }
     }

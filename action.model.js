@@ -15,6 +15,7 @@ Action.create = (action, callback) => {
         } else {
             connection.query('insert into ACTIONS set ?', action, (error, result) => {
                 if (error) {
+                    console.error(error);
                     callback(error, null);
                 } else {
                     callback(null, { id: result.insertId, ...action });
