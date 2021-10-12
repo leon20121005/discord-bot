@@ -109,7 +109,7 @@ class Player {
             return;
         }
         const song = queue.songs[0];
-        const dispatcher = queue.connection.play(await stream(song.url, { highWaterMark: 1<<25 })).on('finish', () => {
+        const dispatcher = queue.connection.play(await stream(song.id, { highWaterMark: 1<<25 })).on('finish', () => {
             queue.songs.shift();
             this.play(guild, queue);
         }).on('error', error => {
@@ -149,7 +149,7 @@ class Player {
                 id:    information.videoDetails.videoId,
                 url:   information.videoDetails.video_url
             };
-            console.log(`Information: ${information}`);
+            console.log(`Video details: ${JSON.stringify(information.videoDetails)}`);
             callback(null, song);
         } catch (error) {
             console.error(error);
