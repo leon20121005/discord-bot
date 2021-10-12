@@ -1,4 +1,4 @@
-const stream = require('./ytdl-customization');
+const stream = require('./ytdl-customization.js');
 const ytdl = require('ytdl-core');
 
 const Action = require('./action.model.js');
