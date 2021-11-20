@@ -2,6 +2,7 @@ const stream = require('./ytdl-customization');
 const ytdl = require('ytdl-core');
 
 const Action = require('./action.model.js');
+const Discord = require('discord.js');
 
 class Player {
     constructor() {
@@ -50,7 +51,8 @@ class Player {
             queue.songs.forEach((song, index) => {
                 result += `[${index + 1}] ${song.title}\n`;
             });
-            message.channel.send(result);
+            const embed = new Discord.MessageEmbed().setColor('#82B1FF').setDescription(result);
+            message.channel.send(embed);
         }
         return;
     }
