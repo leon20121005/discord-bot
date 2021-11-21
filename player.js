@@ -30,6 +30,13 @@ class Player {
         });
     }
 
+    stop(message) {
+        this.execute('stop', message, (queue) => {
+            queue.songs = []
+            queue.dispatcher.end();
+        });
+    }
+
     list(message) {
         this.execute('list', message, (queue) => {
             var result = '';
