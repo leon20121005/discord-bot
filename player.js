@@ -10,51 +10,44 @@ class Player {
     }
 
     pause(message) {
-        const queue = this.queues.get(message.guild.id);
-        if (!queue) {
-            message.channel.send('There is no song I could pause!');
-        } else {
+        this.execute('pause', message, (queue) => {
             queue.dispatcher.pause();
             message.channel.send(`${queue.songs[0].title} is paused!`);
-        }
-        return;
+        });
     }
 
     resume(message) {
-        const queue = this.queues.get(message.guild.id);
-        if (!queue) {
-            message.channel.send('There is no song I could resume!');
-        } else {
+        this.execute('resume', message, (queue) => {
             queue.dispatcher.resume();
             message.channel.send(`${queue.songs[0].title} is resumed!`);
-        }
-        return;
+        });
     }
 
     skip(message) {
-        const queue = this.queues.get(message.guild.id);
-        if (!queue) {
-            message.channel.send('There is no song I could skip!');
-        } else {
+        this.execute('skip', message, (queue) => {
             queue.dispatcher.end();
             message.channel.send(`${queue.songs[0].title} is skip!`);
-        }
-        return;
+        });
     }
 
     list(message) {
-        const queue = this.queues.get(message.guild.id);
-        if (!queue) {
-            message.channel.send('There is no song I could list!');
-        } else {
+        this.execute('list', message, (queue) => {
             var result = '';
             queue.songs.forEach((song, index) => {
                 result += `[${index + 1}] ${song.title}\n`;
             });
             const embed = new Discord.MessageEmbed().setColor('#82B1FF').setDescription(result);
             message.channel.send(embed);
+        });
+    }
+
+    execute(action, message, callback) {
+        const queue = this.queues.get(message.guild.id);
+        if (!queue) {
+            message.channel.send(`There is no song I could ${action}!`);
+        } else {
+            callback(queue, message);
         }
-        return;
     }
 
     async request(message, url) {
