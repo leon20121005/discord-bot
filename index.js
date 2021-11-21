@@ -31,6 +31,9 @@ client.on('message', message => {
         case ';skip':
             player.skip(message);
             break;
+        case ';stop':
+            player.stop(message);
+            break;
         case ';list':
             player.list(message);
             break;
