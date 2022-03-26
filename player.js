@@ -1,4 +1,3 @@
-const stream = require('./ytdl-customization.js');
 const ytdl = require('ytdl-core');
 
 const Action = require('./action.model.js');
@@ -104,14 +103,14 @@ class Player {
         }
     }
 
-    async play(guild, queue) {
+    play(guild, queue) {
         if (queue.songs.length == 0) {
             queue.voiceChannel.leave();
             this.queues.delete(guild.id);
             return;
         }
         const song = queue.songs[0];
-        const dispatcher = queue.connection.play(await stream(song.id, { highWaterMark: 1<<25 })).on('finish', () => {
+        const dispatcher = queue.connection.play(ytdl(song.url)).on('finish', () => {
             queue.songs.shift();
             this.play(guild, queue);
         }).on('error', error => {
